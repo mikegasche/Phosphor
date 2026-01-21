@@ -17,7 +17,7 @@ on:
 
 env:
   VERSION: 1.0.0
-  PYTHON_VERSION: 3.11.14
+  PYTHON_VERSION: 3.11
   DIST_DIR: dist
   BIN_NAME: Phosphor
 
@@ -32,12 +32,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python 3.11.14 via pyenv (macOS)
-        run: |
-          brew install pyenv || true
-          pyenv install -s ${{ env.PYTHON_VERSION }}
-          pyenv local ${{ env.PYTHON_VERSION }}
-          python --version
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Create minimal venv (macOS)
         run: |
@@ -45,9 +43,7 @@ jobs:
           python -m venv venv
           source venv/bin/activate
           pip install --upgrade pip setuptools wheel
-          pip install PySide6
-          pip install pyinstaller
-          pip install python-mpv
+          pip install PySide6 pyinstaller python-mpv
 
       - name: Build Phosphor.app (macOS)
         run: |
@@ -94,10 +90,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python 3.11.14
+      - name: Setup Python 3.11
         uses: actions/setup-python@v4
         with:
-          python-version: 3.11.14
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Create minimal venv (Windows)
         shell: pwsh
@@ -106,9 +102,7 @@ jobs:
           python -m venv venv
           .\venv\Scripts\Activate.ps1
           pip install --upgrade pip setuptools wheel
-          pip install PySide6
-          pip install pyinstaller
-          pip install python-mpv
+          pip install PySide6 pyinstaller python-mpv
 
       - name: Build Phosphor (Windows)
         shell: pwsh
