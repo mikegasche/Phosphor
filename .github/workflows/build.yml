@@ -70,9 +70,9 @@ jobs:
           rm -rf Phosphor
           cd ..
           if [[ "${{ matrix.os }}" == "macos-15-intel" ]]; then
-            ZIP_BASENAME="Phosphor-macos-${{ env.VERSION }}-x64"
+            ZIP_BASENAME="Phosphor-macos-x64-${{ env.VERSION }}"
           else
-            ZIP_BASENAME="Phosphor-macos-${{ env.VERSION }}-arm64"
+            ZIP_BASENAME="Phosphor-macos-arm64-${{ env.VERSION }}"
           fi
           echo "ZIP_BASENAME=$ZIP_BASENAME" >> $GITHUB_ENV
         shell: bash
@@ -117,7 +117,7 @@ jobs:
 
       - name: Prepare Artifact Contents (Windows)
         run: |
-          $ZIP_BASENAME = "Phosphor-${{ env.VERSION }}-windows-x64"
+          $ZIP_BASENAME = "Phosphor-windows-x64-${{ env.VERSION }}"
           "ZIP_BASENAME=$ZIP_BASENAME" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
         shell: pwsh
 
