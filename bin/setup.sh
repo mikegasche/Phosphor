@@ -52,12 +52,11 @@ pip install --upgrade pip setuptools wheel
 
 # --- 8. Install required packages ---
 echo "==> Installing required packages..."
-pip install PySide6 pillow pyinstaller python-mpv
+pip install PySide6 pyinstaller python-mpv
 
 # --- 9. Check installed packages ---
 echo "==> Installed packages:"
 python -m pip show PySide6
-python -m pip show pillow
 python -m pip show pyinstaller
 python -m pip show python-mpv
 

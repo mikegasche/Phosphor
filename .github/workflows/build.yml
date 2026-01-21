@@ -1,0 +1,134 @@
+# NOTE:
+# This build workflow works correctly, but PyInstaller on macOS and on GitHub
+# Actions runners produces app bundles that are significantly larger than expected.
+# The macOS builds contain duplicated framework and dependency files instead of
+# using symlinks, which greatly increases the final bundle size. Local macOS builds
+# created on a developer machine are much smaller, but GitHub's macOS runners
+# do not replicate this behavior. This appears to be related to how PyInstaller
+# resolves and packages system frameworks in the CI environment.
+
+name: Build Phosphor Releases
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+env:
+  VERSION: 1.0.0
+  PYTHON_VERSION: 3.11.14
+  DIST_DIR: dist
+  BIN_NAME: Phosphor
+
+jobs:
+  build-macos:
+    strategy:
+      matrix:
+        os: [macos-15-intel, macos-latest]
+    runs-on: ${{ matrix.os }}
+    name: Build macOS (${{ matrix.os }})
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11.14 via pyenv (macOS)
+        run: |
+          brew install pyenv || true
+          pyenv install -s ${{ env.PYTHON_VERSION }}
+          pyenv local ${{ env.PYTHON_VERSION }}
+          python --version
+
+      - name: Create minimal venv (macOS)
+        run: |
+          rm -rf venv
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip setuptools wheel
+          pip install PySide6
+          pip install pyinstaller
+          pip install python-mpv
+
+      - name: Build Phosphor.app (macOS)
+        run: |
+          source venv/bin/activate
+          rm -rf build dist ${{ env.BIN_NAME }}.spec
+
+          if [[ "${{ matrix.os }}" == "macos-15-intel" ]]; then
+            TARGET_ARCH="x86_64"
+          else
+            TARGET_ARCH="arm64"
+          fi
+
+          pyinstaller --name "${{ env.BIN_NAME }}" --windowed \
+            --icon "app/resources/app_icon.icns" \
+            --add-data "app/resources:resources" \
+            --clean \
+            --noconfirm \
+            --target-arch $TARGET_ARCH \
+            app/phosphor.py
+
+      - name: Prepare Artifact Contents (macOS)
+        run: |
+          cd dist
+          rm -rf Phosphor
+          cd ..
+          if [[ "${{ matrix.os }}" == "macos-15-intel" ]]; then
+            ZIP_BASENAME="Phosphor-macos-${{ env.VERSION }}-x64"
+          else
+            ZIP_BASENAME="Phosphor-macos-${{ env.VERSION }}-arm64"
+          fi
+          echo "ZIP_BASENAME=$ZIP_BASENAME" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Upload artifact (macOS)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ZIP_BASENAME }}
+          path: ${{ env.DIST_DIR }}
+
+  build-windows:
+    runs-on: windows-latest
+    name: Build Windows x64
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11.14
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11.14
+
+      - name: Create minimal venv (Windows)
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force venv -ErrorAction SilentlyContinue
+          python -m venv venv
+          .\venv\Scripts\Activate.ps1
+          pip install --upgrade pip setuptools wheel
+          pip install PySide6
+          pip install pyinstaller
+          pip install python-mpv
+
+      - name: Build Phosphor (Windows)
+        shell: pwsh
+        run: |
+          .\venv\Scripts\Activate.ps1
+          Remove-Item -Recurse -Force build, dist, Phosphor.spec -ErrorAction SilentlyContinue
+          pyinstaller --name "${{ env.BIN_NAME }}" --windowed `
+            --onefile `
+            --icon "app/resources/app_icon.ico" `
+            --add-data "app/resources;resources" `
+            app/phosphor.py
+
+      - name: Prepare Artifact Contents (Windows)
+        run: |
+          $ZIP_BASENAME = "Phosphor-${{ env.VERSION }}-windows-x64"
+          "ZIP_BASENAME=$ZIP_BASENAME" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+        shell: pwsh
+
+      - name: Upload Windows artifact (Windows)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ZIP_BASENAME }}
+          path: ${{ env.DIST_DIR }}
