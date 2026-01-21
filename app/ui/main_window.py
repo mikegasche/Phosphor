@@ -25,7 +25,7 @@
 # Author:      Michael Gasche
 # Created:     2026-01
 # Product:     Phosphor
-# Description: Retro video player with CRT, scanline, and VHS effects.
+# Description: c
 
 
 import os
@@ -39,7 +39,7 @@ from helper import get_resource_path
 from player.mpv_player import MPVPlayer
 
 from PySide6.QtCore import QSize, Qt
-from PySide6.QtGui import QPixmap, QAction
+from PySide6.QtGui import QPixmap, QAction, QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QCheckBox,
@@ -105,6 +105,7 @@ class MainWindow(QMainWindow):
         self.setup_menu()
 
         self.setWindowTitle(FULL_TITLE)
+        self.setWindowIcon(QIcon(get_resource_path("app_icon.png")))
         self.resize(300, 526)
         self.setFixedSize(300, 526)
         self.setWindowFlags(Qt.Window)
@@ -238,7 +239,14 @@ class MainWindow(QMainWindow):
         layout.addLayout(layout_control)
 
         self.setContentsMargins(0, 0, 0, 0)
+
+        screen_geometry = QApplication.primaryScreen().availableGeometry()
+        window_geometry = self.frameGeometry()
+        window_geometry.moveCenter(screen_geometry.center())
+        self.move(window_geometry.topLeft())
+
         self.setCentralWidget(frame)
+        self.show()
 
         # ---------------- Player ----------------
         self.player = None
