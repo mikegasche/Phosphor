@@ -556,7 +556,6 @@ class MainWindow(QMainWindow):
             wid=None,  # no embedding for all platforms
             retro_audio=self.audio_cb.isChecked(),
             osc=ON_SCREEN_CONTROLLER,
-            main_window=self,
             settings=self.settings
         )
 

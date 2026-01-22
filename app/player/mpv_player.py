@@ -46,11 +46,10 @@ class MPVPlayer(QObject):
 
     error_signal = Signal(str, str)
 
-    def __init__(self, wid: int = None, retro_audio: bool = False, osc: bool = True, main_window=None, settings=None):
+    def __init__(self, wid: int = None, retro_audio: bool = False, osc: bool = True, settings=None):
         """Initialize MPV wrapper; MPV instance created on video load."""
         super().__init__()
 
-        self.main_window = main_window
         self.settings = settings
         self._crt_enabled = False
         self._scanlines_enabled = False
@@ -231,6 +230,7 @@ class MPVPlayer(QObject):
             else:
                 msg += "Make sure MPV is installed and available in your system PATH.\n"
 
+            print(f"MPV Initialization Error: {e}", flush=True)
             self.error_signal.emit("MPV Initialization Error", msg)
             return
 
@@ -240,8 +240,8 @@ class MPVPlayer(QObject):
                 self.mpv.command("loadfile", path, "replace")
                 self.mpv.pause = False
             except Exception as e:
-                if self.main_window:
-                    self.main_window.show_error("Error Loading Video", f"Error loading file:\n{e}")
+                print(f"Error loading video: {e}", flush=True)
+                self.error_signal.emit("Error Loading Video", f"Error loading file:\n{e}")
 
 
     # -------------------------------
