@@ -2,7 +2,7 @@
 
 <img src="app/resources/logo.png" width="200" height="200" alt="Phosphor Logo">
 
-Phosphor is a retro video player for macOS that emulates the look and feel of CRT TVs, old VHS tapes, and classic scanlines. Designed for enthusiasts and developers who love vintage video effects.
+Phosphor is a retro video player for macOS and Windows that emulates the look and feel of CRT TVs, old VHS tapes, and classic scanlines. Designed for enthusiasts and developers who love vintage video effects.
 
 > **Prerequisites:** Phosphor requires [MPV](https://mpv.io/) to be installed on your system.  
 > - **macOS:** Install MPV via Homebrew (`brew install mpv`). The necessary libraries are automatically found by Phosphor.  
