@@ -42,22 +42,25 @@ Phosphor is a retro video player for macOS that emulates the look and feel of CR
 ## Installation
 
 1. Clone the repository:
+   
    ```bash
    git clone https://github.com/mikegasche/phosphor.git
    cd phosphor
    ```
 
-2. Set up Python environment:
+3. Set up Python environment:
+   
    ```bash
    ./bin/setup.sh
    ```
 
-3. Run the app:
+4. Run the app:
+   
    ```bash
    ./bin/phosphor.sh
    ```
 
-## Building macOS App Bundle
+## Building macOS App Bundle
 
    ```bash
    ./bin/make.sh
