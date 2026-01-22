@@ -58,6 +58,7 @@ Phosphor is a retro video player for macOS that emulates the look and feel of CR
    ```
 
 ## Building macOS App Bundle
+
    ```bash
    ./bin/make.sh
    ```
