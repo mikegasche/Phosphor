@@ -28,6 +28,11 @@
 # Description: Main application entry point for the Phosphor video player.
 
 
+import os
+import platform
+if platform.machine() == "arm64":
+    os.environ["DYLD_LIBRARY_PATH"] = "/opt/homebrew/opt/mpv/lib/:" + os.environ.get("DYLD_LIBRARY_PATH", "")
+
 import locale
 locale.setlocale(locale.LC_NUMERIC, "C")
 
