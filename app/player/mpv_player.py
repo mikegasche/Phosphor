@@ -31,7 +31,9 @@
 import mpv
 import platform
 import threading
+
 from pathlib import Path
+from PySide6.QtCore import Signal, QObject
 
 from helper import get_resource_path
 
@@ -40,9 +42,13 @@ from helper import get_resource_path
 # MPVPlayer class
 # -------------------------------
 
-class MPVPlayer:
+class MPVPlayer(QObject):
+
+    error_signal = Signal(str, str)
+
     def __init__(self, wid: int = None, retro_audio: bool = False, osc: bool = True, main_window=None, settings=None):
         """Initialize MPV wrapper; MPV instance created on video load."""
+        super().__init__()
 
         self.main_window = main_window
         self.settings = settings
@@ -209,24 +215,23 @@ class MPVPlayer:
                     "Make sure MPV is installed (e.g., via Homebrew) and that DYLD_LIBRARY_PATH includes its libraries.\n\n"
                     "You can test in Terminal:\n"
                     "  echo $DYLD_LIBRARY_PATH\n"
-                    "  mpv --version"
+                    "  mpv --version\n"
                 )
             elif system == "Linux":
                 msg += (
                     "Make sure MPV is installed and LD_LIBRARY_PATH (or PATH) includes its libraries.\n\n"
                     "Test in Terminal:\n"
                     "  echo $LD_LIBRARY_PATH\n"
-                    "  mpv --version"
+                    "  mpv --version\n"
                 )
             elif system == "Windows":
                 msg += (
-                    "Make sure MPV is installed and the folder containing mpv.exe is in your PATH."
+                    "Make sure MPV is installed and the folder containing mpv.exe is in your PATH.\n"
                 )
             else:
-                msg += "Make sure MPV is installed and available in your system PATH."
+                msg += "Make sure MPV is installed and available in your system PATH.\n"
 
-            if self.main_window:
-                self.main_window.show_error("MPV Initialization Error", msg)
+            self.error_signal.emit("MPV Initialization Error", msg)
             return
 
         # Load video
@@ -301,6 +306,6 @@ class MPVPlayer:
             "lowpass=f=6000",
             "acompressor=threshold=0.2:ratio=3:makeup=6",
             "acrusher=bits=8",
-            "pan=stereo|c0=0.7*c0+0.3*c1|c1=0.7*c1+0.3*c0",
-            "aecho=0.05:0.3:1:0.3"
+            "pan=stereo|c0=0.7*c0+0.3*c1|c1=0.7*c1+0.3*c0"
+            # "aecho=0.05:0.3:1:0.3"
         ])

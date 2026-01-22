@@ -31,11 +31,10 @@
 import os
 import sys
 import json
-import platform
 
 from threading import Thread
 
-from helper import get_resource_path
+from helper import get_resource_path, check_metal_support
 from player.mpv_player import MPVPlayer
 
 from PySide6.QtCore import QSize, Qt
@@ -95,11 +94,9 @@ SHADER_KEY_MAP = {
 # --------------------------------------------------------------
 # MainWindow class
 # --------------------------------------------------------------
-
 class MainWindow(QMainWindow):
 
     def __init__(self):
-
         super().__init__()
 
         self.setup_menu()
@@ -108,7 +105,7 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon(get_resource_path("app_icon.png")))
         self.resize(300, 526)
         self.setFixedSize(300, 526)
-        self.setWindowFlags(Qt.Window)
+        self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
         self.setStyleSheet("""
             QPushButton {
                 background: rgba(255,255,255,0.04);
@@ -334,21 +331,21 @@ class MainWindow(QMainWindow):
         box = QMessageBox()
         box.setWindowTitle(title)
         box.setText(message)
-        box.setIconPixmap(QPixmap(self.resource_path("information.png")))
+        box.setIconPixmap(QPixmap(get_resource_path("information.png")))
         box.exec()
 
     def show_warning(self, title: str, message: str):
         box = QMessageBox()
         box.setWindowTitle(title)
         box.setText(message)
-        box.setIconPixmap(QPixmap(self.resource_path("warning.png")))
+        box.setIconPixmap(QPixmap(get_resource_path("warning.png")))
         box.exec()
 
     def show_error(self, title: str, message: str):
         box = QMessageBox()
         box.setWindowTitle(title)
         box.setText(message)
-        box.setIconPixmap(QPixmap(self.resource_path("error.png")))
+        box.setIconPixmap(QPixmap(get_resource_path("error.png")))
         box.exec()
 
 
@@ -507,6 +504,15 @@ class MainWindow(QMainWindow):
 
     def _open_video_file(self, file):
         """Open a video file and initialize MPV player with static shader files (-5..+5 stages)."""
+
+        # --- Metal check ---
+        if sys.platform == "darwin" and not check_metal_support():
+            self.show_error(
+                "Metal Support Required",
+                "Your Mac's GPU does not support Metal, which is required for video playback.\n\nPlease use a different device.\n"
+            )
+            return
+
         self.audio_cb.setEnabled(False)
         
         if self.player:
@@ -514,28 +520,16 @@ class MainWindow(QMainWindow):
             self.player = None
         QApplication.processEvents()
 
-        # macOS: do not create empty Qt window, embed not supported
-        if platform.system() == "Darwin":
-            self.player = MPVPlayer(
-                wid=None,  # no embedding
-                retro_audio=self.audio_cb.isChecked(),
-                osc=ON_SCREEN_CONTROLLER,
-                main_window=self,
-                settings=self.settings
-            )
-        else:
-            # Linux/Windows: optional QWidget embedding
-            self.mpv_window = QWidget()
-            self.mpv_window.setWindowTitle("PHOSPHOR Video")
-            self.mpv_window.setGeometry(100, 100, 800, 450)
-            self.mpv_window.show()
-            QApplication.processEvents()
+        self.player = MPVPlayer(
+            wid=None,  # no embedding for all platforms
+            retro_audio=self.audio_cb.isChecked(),
+            osc=ON_SCREEN_CONTROLLER,
+            main_window=self,
+            settings=self.settings
+        )
 
-            self.player = MPVPlayer(
-                wid=int(self.mpv_window.winId()),
-                retro_audio=self.audio_cb.isChecked(),
-                osc=ON_SCREEN_CONTROLLER
-            )
+        # Connect error signal
+        self.player.error_signal.connect(self.show_error)
 
         # ---------------- Apply checkbox activation first ----------------
         self.player.enable_crt(self.settings.get("crt_cb", False))

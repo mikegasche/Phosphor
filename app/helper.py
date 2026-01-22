@@ -30,6 +30,7 @@
 
 import os
 import sys
+import subprocess
 
 
 def get_resource_path(filename: str) -> str:
@@ -47,3 +48,14 @@ def get_resource_path(filename: str) -> str:
         base_path = os.path.join(os.path.dirname(__file__), "resources")
     
     return os.path.join(base_path, filename)
+
+def check_metal_support():
+    try:
+        # GPU info on macOS
+        output = subprocess.check_output(["system_profiler", "SPDisplaysDataType"])
+        output = output.decode("utf-8")
+        if "Metal: Supported" not in output:
+            return False
+        return True
+    except Exception:
+        return False
