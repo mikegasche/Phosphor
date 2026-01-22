@@ -28,8 +28,10 @@
 # Description: Helper functions for the Phosphor video player.
 
 
+import re
 import os
 import sys
+import platform
 import subprocess
 
 
@@ -50,12 +52,29 @@ def get_resource_path(filename: str) -> str:
     return os.path.join(base_path, filename)
 
 def check_metal_support():
-    try:
-        # GPU info on macOS
-        output = subprocess.check_output(["system_profiler", "SPDisplaysDataType"])
-        output = output.decode("utf-8")
-        if "Metal: Supported" not in output:
-            return False
+    if platform.machine() == "arm64":
         return True
+
+    try:
+        output = subprocess.check_output(
+            ["system_profiler", "SPDisplaysDataType"], stderr=subprocess.DEVNULL
+        ).decode("utf-8")
+
+        # Suche nach allen GPU-Modellen
+        gpus = re.findall(r'^\s*Chipset Model:\s*(.+)$', output, re.MULTILINE)
+        if not gpus:
+            return False
+
+        for gpu in gpus:
+            gpu_lower = gpu.lower()
+            if "nvidia" in gpu_lower and any(gen in gpu_lower for gen in ["gtx 6", "gtx 7", "kepler"]):
+                return False
+            if "intel" in gpu_lower and any(gen in gpu_lower for gen in ["hd 4", "hd 5"]):
+                return False
+            # AMD -> Polaris, Vega, Navi OK
+            # possible to add more checks here if needed
+
+        return True
+
     except Exception:
         return False

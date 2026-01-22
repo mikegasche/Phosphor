@@ -304,7 +304,7 @@ class MPVPlayer(QObject):
         return ",".join([
             "highpass=f=150",
             "lowpass=f=6000",
-            "acompressor=threshold=0.2:ratio=3:makeup=6",
+            "acompressor=threshold=0.2:ratio=3:makeup=2",
             "acrusher=bits=8",
             "pan=stereo|c0=0.7*c0+0.3*c1|c1=0.7*c1+0.3*c0"
             # "aecho=0.05:0.3:1:0.3"

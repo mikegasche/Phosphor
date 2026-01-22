@@ -106,19 +106,34 @@ class MainWindow(QMainWindow):
         self.resize(300, 526)
         self.setFixedSize(300, 526)
         self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint)
-        self.setStyleSheet("""
-            QPushButton {
-                background: rgba(255,255,255,0.04);
-                border-radius: 6px;
-            }
-            QPushButton:hover {
-                background: rgba(255,255,255,0.08);
-                border-radius: 6px;
-            }
-            QPushButton:pressed {
-                background: rgba(255,255,255,0.15);
-            }
-            """)
+        if self.qt_is_dark():
+            self.setStyleSheet("""
+                QPushButton {
+                    background: rgba(255,255,255,0.04);
+                    border-radius: 6px;
+                }
+                QPushButton:hover {
+                    background: rgba(255,255,255,0.08);
+                    border-radius: 6px;
+                }
+                QPushButton:pressed {
+                    background: rgba(255,255,255,0.15);
+                }
+                """)
+        else:
+            self.setStyleSheet("""
+                QPushButton {
+                    background: rgba(0,0,0,0.06);
+                    border-radius: 6px;
+                }
+                QPushButton:hover {
+                    background: rgba(0,0,0,0.08);
+                    border-radius: 6px;
+                }
+                QPushButton:pressed {
+                    background: rgba(0,0,0,0.15);
+                }
+                """)
 
         # ---------------- Sidebar ----------------
         frame = QFrame(self)
@@ -287,6 +302,21 @@ class MainWindow(QMainWindow):
             QShortcut(QKeySequence("F"), self, activated=lambda: self.player.mpv.command("cycle", "fullscreen"), context=Qt.ApplicationShortcut)
 
 
+    # --------------------------------------------------------------
+    # QT Dark Mode Detection
+    # --------------------------------------------------------------
+
+    def qt_is_dark(reference: QWidget | None = None) -> bool:
+        if reference is None:
+            w = QWidget()
+            w.ensurePolished()
+            color = w.palette().color(w.backgroundRole())
+        else:
+            reference.ensurePolished()
+            color = reference.palette().color(reference.backgroundRole())
+
+        return color.lightness() < 128
+    
     # --------------------------------------------------------------
     # Menu setup
     # --------------------------------------------------------------
@@ -509,7 +539,9 @@ class MainWindow(QMainWindow):
         if sys.platform == "darwin" and not check_metal_support():
             self.show_error(
                 "Metal Support Required",
-                "Your Mac's GPU does not support Metal, which is required for video playback.\n\nPlease use a different device.\n"
+                "Your Mac's GPU is not compatible with Phosphor's Metal-based rendering.\n\n"
+                "Older NVIDIA Kepler GPUs and Intel HD 4000/5000 series are not supported.\n"
+                "Please use a Mac with a supported GPU (AMD Polaris or newer, Apple Silicon, etc.).\n"
             )
             return
 
