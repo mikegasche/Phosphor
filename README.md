@@ -2,11 +2,37 @@
 
 <img src="app/resources/logo.png" width="200" height="200" alt="Phosphor Logo">
 
-Phosphor is a retro video player for macOS that emulates the look and feel of CRT TVs, old VHS tapes, and classic scanlines. Designed for enthusiasts and developers who love vintage video effects.
+Phosphor is a retro video player for macOS and Windows that emulates the look and feel of CRT TVs, old VHS tapes, and classic scanlines. Designed for enthusiasts and developers who love vintage video effects.
 
 > **Prerequisites:** Phosphor requires [MPV](https://mpv.io/) to be installed on your system.  
 > - **macOS:** Install MPV via Homebrew (`brew install mpv`). The necessary libraries are automatically found by Phosphor.  
-> - **Windows:** You need `libmpv-2.dll` (MPV executable is not required). A reliable source is [SourceForge MPV Windows builds](https://sourceforge.net/projects/mpv-player-windows/files/libmpv/). Ensure the folder containing `libmpv-2.dll` is in your system `PATH`.  
+> - **Windows:** You need `libmpv-2.dll` (MPV executable is not required). A reliable source is [SourceForge MPV Windows builds](https://sourceforge.net/projects/mpv-player-windows/files/libmpv/). Ensure the folder containing `libmpv-2.dll` is in your system `PATH`.
+
+## Quick Start
+
+You can get Phosphor running in two ways:
+
+1. **Use a pre-built binary (recommended)**  
+   Download the binary for your system from the [Releases page](https://github.com/mikegasche/Phosphor/releases) and run it directly – no Python setup needed. This is the easiest way to start.
+
+2. **Run with Python (for development or advanced users)**  
+   If you want to develop Phosphor or run it from source, follow these steps:
+
+   **macOS / Linux:**
+
+   ```bash
+   ./bin/setup.sh
+   ./bin/phosphor.sh
+   ```
+
+   **Windows:**
+
+   ```powershell
+   bin\setup.bat
+   bin\phosphor.bat
+   ```
+
+   This will create a virtual environment, install the required packages (PySide6, PyInstaller, python-mpv), and run the app.
 
 ## Features
 
@@ -42,25 +68,37 @@ Phosphor is a retro video player for macOS that emulates the look and feel of CR
 ## Installation
 
 1. Clone the repository:
-   
+
    ```bash
    git clone https://github.com/mikegasche/phosphor.git
    cd phosphor
    ```
 
-3. Set up Python environment:
-   
+2. Set up Python environment:
+
    ```bash
    ./bin/setup.sh
    ```
 
-4. Run the app:
-   
+   or
+
+   ```powershell
+   bin\setup.bat
+   ```
+
+3. Run the app:
+
    ```bash
    ./bin/phosphor.sh
    ```
 
-## Building macOS App Bundle
+   or
+
+   ```powershell
+   bin\phosphor.bat
+   ```
+
+## Building App Bundle (UNIX)
 
    ```bash
    ./bin/make.sh
@@ -68,4 +106,4 @@ Phosphor is a retro video player for macOS that emulates the look and feel of CR
 
 ## License
 
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License**. See the LICENSE file for details.
