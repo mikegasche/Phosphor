@@ -60,7 +60,7 @@ Phosphor is a retro video player for macOS and Windows that emulates the look an
    ./bin/phosphor.sh
    ```
 
-## Building macOS App Bundle
+## Building App Bundle
 
    ```bash
    ./bin/make.sh
