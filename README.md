@@ -98,10 +98,16 @@ You can get Phosphor running in two ways:
    bin\phosphor.bat
    ```
 
-## Building App Bundle (UNIX)
+## Building App Bundle
 
    ```bash
    ./bin/make.sh
+   ```
+
+   or
+
+   ```powershell
+   bin\make.bat
    ```
 
 ## License
