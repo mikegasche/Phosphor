@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
 
-# Basiswerte für CRT
+# Underlying values for CRT
 BASE_PARAMS = {
     "CURVATURE_AMOUNT": 0.05,   # Screen curvature strength
     "CHROMA_OFFSET": 0.002,     # Horizontal chromatic aberration
@@ -9,7 +9,7 @@ BASE_PARAMS = {
     "VIGNETTE_POWER": 1.0       # Vignette falloff
 }
 
-# Skala -5 bis +5
+# Scale -5 to +5
 SCALE = list(range(-5, 6))
 
 SHADER_DIR = Path("../../shaders")
@@ -21,7 +21,7 @@ for i in SCALE:
     else:
         filename = SHADER_DIR / f"crt_base_{i}.glsl"
 
-    # Skalierung: +/-20% pro Stufe
+    # Scaling: +/-20% per level
     curvature = BASE_PARAMS["CURVATURE_AMOUNT"] * (1 + 0.2 * i)
     chroma = BASE_PARAMS["CHROMA_OFFSET"] * (1 + 0.2 * i)
     vignette_strength = min(max(BASE_PARAMS["VIGNETTE_STRENGTH"] * (1 + 0.15 * i), 0.0), 1.0)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
 
-# Basiswerte für Scanlines
+# Base values for scan lines
 BASE_PARAMS = {
     "SCANLINE_DENSITY": 600.0,
     "DARK_LEVEL": 0.82,
@@ -9,7 +9,7 @@ BASE_PARAMS = {
     "STRENGTH": 1.0
 }
 
-# Skala von -5 bis +5, 0 ist Basis
+# Scale from -5 to +5
 SCALE = list(range(-5, 6))
 
 SHADER_DIR = Path("../../shaders")
@@ -21,10 +21,10 @@ for i in SCALE:
     else:
         filename = SHADER_DIR / f"scanlines_{i}.glsl"
 
-    # Berechne Parameteränderungen
-    # SCANLINE_DENSITY ±10% pro Schritt
+    # Calculate parameter changes
+    # SCANLINE_DENSITY ±10% per step
     density = BASE_PARAMS["SCANLINE_DENSITY"] * (1 + 0.1 * i)
-    # STRENGTH ±0.2 pro Schritt, clamp zwischen 0 und 2
+    # STRENGTH ±0.2 per step, clamp between 0 and 2
     strength = min(max(BASE_PARAMS["STRENGTH"] * (1 + 0.2 * i), 0.0), 2.0)
 
     content = f"""//!HOOK MAIN

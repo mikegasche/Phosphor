@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
 
-# Basiswerte für VHS
+# Underlying values for VHS
 BASE_PARAMS = {
     "GRAIN_STRENGTH": 0.03,
     "FLICKER_STRENGTH": 0.01,
@@ -9,7 +9,7 @@ BASE_PARAMS = {
     "GLITCH_AMOUNT": 0.02
 }
 
-# Skala -5 bis +5
+# Scale -5 to +5
 SCALE = list(range(-5, 6))
 
 SHADER_DIR = Path("../../shaders")
@@ -21,7 +21,7 @@ for i in SCALE:
     else:
         filename = SHADER_DIR / f"vhs_noise_{i}.glsl"
 
-    # Skalenberechnung
+    # Scale calculations
     grain = max(BASE_PARAMS["GRAIN_STRENGTH"] * (1 + 0.2 * i), 0.0)
     flicker = max(BASE_PARAMS["FLICKER_STRENGTH"] * (1 + 0.2 * i), 0.0)
     glitch = max(BASE_PARAMS["GLITCH_AMOUNT"] * (1 + 0.2 * i), 0.0)
